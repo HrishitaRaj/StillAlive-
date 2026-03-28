@@ -66,8 +66,10 @@ export default function MapPanel({ users, geo, onShareLocation, messages, roomId
       // Other users
       users.forEach(user => {
         if (user.location) {
+          // color by status
+          const color = user.status === 'safe' ? '#2b9a3e' : user.status === 'critical' ? '#e63946' : '#f59e0b';
           const userIcon = L.divIcon({
-            html: `<div style="width:12px;height:12px;background:#1a8cff;border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px #1a8cff"></div>`,
+            html: `<div style="width:12px;height:12px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px ${color}"></div>`,
             iconSize: [12, 12],
             className: '',
           });
@@ -80,14 +82,17 @@ export default function MapPanel({ users, geo, onShareLocation, messages, roomId
       // SOS markers
       sosMessages.forEach(msg => {
         if (msg.location) {
+          const active = msg.active !== false;
+          const color = active ? '#e63946' : '#6b7280';
+          const pulse = active ? 'animation:pulse 1.5s infinite' : '';
           const sosIcon = L.divIcon({
-            html: '<div style="width:20px;height:20px;background:#e63946;border:3px solid #fff;border-radius:50%;box-shadow:0 0 15px #e63946;animation:pulse 1.5s infinite"></div>',
+            html: `<div style="width:20px;height:20px;background:${color};border:3px solid #fff;border-radius:50%;box-shadow:0 0 15px ${color};${pulse}"></div>`,
             iconSize: [20, 20],
             className: '',
           });
           L.marker([msg.location.lat, msg.location.lng], { icon: sosIcon })
             .addTo(map)
-            .bindPopup(`🚨 SOS: ${msg.sender}`);
+            .bindPopup(`${active ? '🚨 SOS' : '⚪ Offline SOS'}: ${msg.sender}`);
         }
       });
 

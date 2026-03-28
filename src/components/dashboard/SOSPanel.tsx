@@ -25,7 +25,19 @@ const statuses = [
 export default function SOSPanel({ messages, onSendSOS, onUpdateStatus }: SOSPanelProps) {
   const [currentStatus, setCurrentStatus] = useState<'safe' | 'need-help' | 'critical'>('safe');
   const [sosSent, setSosSent] = useState(false);
-  const sosMessages = messages.filter(m => m.type === 'sos');
+  const sosMessages = messages.filter(m => m.type === 'sos')
+    .slice()
+    .sort((a, b) => {
+      // active first, then priority high -> low, then recent
+      const aActive = a.active === false ? 0 : 1;
+      const bActive = b.active === false ? 0 : 1;
+      if (aActive !== bActive) return bActive - aActive;
+      const prio = (p: any) => (p === 'high' || p === 'HIGH' ? 3 : (p === 'medium' || p === 'MEDIUM' ? 2 : 1));
+      const pa = prio(a.priority);
+      const pb = prio(b.priority);
+      if (pa !== pb) return pb - pa;
+      return b.timestamp - a.timestamp;
+    });
 
   const handleSOS = () => {
     onSendSOS();
@@ -37,6 +49,8 @@ export default function SOSPanel({ messages, onSendSOS, onUpdateStatus }: SOSPan
     setCurrentStatus(status);
     onUpdateStatus(status);
   };
+
+  const activeCount = messages.filter(m => m.type === 'sos' && (m.active === undefined || m.active === true)).length;
 
   return (
     <div className="flex flex-col h-full overflow-y-auto p-4">
@@ -85,18 +99,25 @@ export default function SOSPanel({ messages, onSendSOS, onUpdateStatus }: SOSPan
 
       {/* SOS Messages */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground mb-3">SOS Alerts ({sosMessages.length})</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">SOS Alerts ({activeCount})</h3>
         {sosMessages.length === 0 ? (
           <p className="text-sm text-muted-foreground">No SOS alerts.</p>
         ) : (
           <div className="space-y-2">
             {sosMessages.map(msg => (
-              <div key={msg.id} className="p-3 rounded-lg bg-sos/10 border border-sos/20">
+              <div key={msg.id} className={`p-3 rounded-lg ${msg.active === false ? 'bg-secondary/60 border border-border text-muted-foreground opacity-60' : 'bg-sos/10 border border-sos/20'}`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-sos">{msg.sender}</span>
-                  <span className="text-[10px] text-muted-foreground font-mono">{formatTime(msg.timestamp)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold ${msg.active === false ? 'text-muted-foreground' : 'text-sos'}`}>{msg.sender}</span>
+                    {msg.via === 'peer' && <span className="text-[10px] bg-yellow-600 text-yellow-50 px-1 rounded">P2P</span>}
+                    {msg.via === 'server' && <span className="text-[10px] bg-slate-800 text-slate-300 px-1 rounded">Srv</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {msg.priority && (msg.priority === 'high' || msg.priority === 'HIGH') && <span className="text-[10px] bg-sos text-sos-foreground px-2 py-0.5 rounded font-bold">HIGH PRIORITY</span>}
+                    <span className="text-[10px] text-muted-foreground font-mono">{formatTime(msg.timestamp)}</span>
+                  </div>
                 </div>
-                <p className="text-sm text-sos">{msg.content}</p>
+                <p className={`text-sm ${msg.active === false ? 'text-muted-foreground' : 'text-sos'}`}>{msg.content}{msg.active === false && <span className="ml-2 text-[11px] px-1 py-0.5 rounded bg-secondary text-muted-foreground">User offline</span>}</p>
                 {msg.location && (
                   <p className="text-[10px] text-muted-foreground font-mono mt-1">
                     📍 {msg.location.lat.toFixed(4)}, {msg.location.lng.toFixed(4)}

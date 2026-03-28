@@ -35,19 +35,23 @@ export default function JoinRoomPage() {
 
     if (!navigator.geolocation) {
       // Fallback: use random room if geolocation unavailable
-      connectWithRoom(`zone-fallback-${Math.random().toString(36).slice(2, 6)}`);
+      // No geolocation — proceed and let socket server assign the zone using no coords
+      try { sessionStorage.removeItem('stillalive_coords'); } catch {}
+      connectWithRoom('');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const roomId = geoToRoomId(pos.coords.latitude, pos.coords.longitude);
-        connectWithRoom(roomId);
+        // Save coords for later socket join; let socket server assign authoritative room
+        try { sessionStorage.setItem('stillalive_coords', JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude })); } catch {}
+        connectWithRoom('');
       },
       (err) => {
         console.warn('Geolocation error, using fallback room:', err.message);
-        // Still connect, just with a random zone
-        connectWithRoom(`zone-fallback-${Math.random().toString(36).slice(2, 6)}`);
+        // Still connect, just without coords — server will assign a room
+        try { sessionStorage.removeItem('stillalive_coords'); } catch {}
+        connectWithRoom('');
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -58,7 +62,8 @@ export default function JoinRoomPage() {
     const callsign = generateCallsign();
     // Brief delay for UX feel
     setTimeout(() => {
-      join(callsign, roomId);
+      // Set username now; authoritative room will be assigned by the socket server.
+      join(callsign);
       navigate('/dashboard');
     }, 800);
   };

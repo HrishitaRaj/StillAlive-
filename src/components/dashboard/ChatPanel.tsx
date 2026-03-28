@@ -25,7 +25,7 @@ function PriorityBadge({ priority }: { priority?: string }) {
 export default function ChatPanel({ messages, onSend, username, onSendSOS, onShareLocation }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
-  const chatMessages = messages.filter(m => m.type === 'chat' || m.type === 'sos');
+  const chatMessages = messages.filter(m => m.type === 'chat' || m.type === 'sos' || m.type === 'system' || m.type === 'location');
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -45,35 +45,82 @@ export default function ChatPanel({ messages, onSend, username, onSendSOS, onSha
             No messages yet. Start the conversation.
           </div>
         )}
-        {chatMessages.map(msg => {
-          const isOwn = msg.sender === username;
-          const isSOS = msg.type === 'sos';
-          return (
-            <div
-              key={msg.id}
-              className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-xl px-4 py-2.5 ${
-                  isSOS
-                    ? 'bg-sos/15 border border-sos/30'
-                    : isOwn
-                    ? 'bg-primary/15 border border-primary/20'
-                    : 'bg-secondary border border-border'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-semibold ${isSOS ? 'text-sos' : 'text-primary'}`}>
-                    {msg.sender}
-                  </span>
-                  <PriorityBadge priority={msg.priority} />
-                  <span className="text-[10px] text-muted-foreground font-mono">{formatTime(msg.timestamp)}</span>
-                </div>
-                <p className={`text-sm ${isSOS ? 'text-sos font-semibold' : 'text-foreground'}`}>{msg.content}</p>
-              </div>
-            </div>
-          );
-        })}
+        {chatMessages.map((msg) => {
+  if (msg.type === 'system') {
+    const isJoin = /joined/i.test(msg.content);
+    const isLeave = /left/i.test(msg.content);
+
+    return (
+      <div key={msg.id} className="flex justify-center">
+        <div className={`max-w-[80%] text-center text-sm italic ${
+          isJoin ? 'text-safe' : 'text-muted-foreground'
+        }`}>
+          {msg.content}
+        </div>
+      </div>
+    );
+  }
+
+  const isOwn = msg.sender === username;
+  const isSOS = msg.type === 'sos';
+  const isLocation = msg.type === 'location';
+
+  return (
+    <div
+      key={msg.id}
+      className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
+    >
+      <div
+        className={`max-w-[80%] rounded-xl px-4 py-2.5 ${
+          isSOS
+            ? 'bg-sos/15 border border-sos/30'
+            : isLocation
+            ? 'bg-secondary/10 border border-border'
+            : isOwn
+            ? 'bg-primary/15 border border-primary/20'
+            : 'bg-secondary border border-border'
+        }`}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <span className={`text-xs font-semibold ${isSOS ? 'text-sos' : 'text-primary'}`}>
+            {msg.sender}
+          </span>
+
+          <PriorityBadge priority={msg.priority} />
+
+          <span className="text-[10px] text-muted-foreground font-mono">
+            {formatTime(msg.timestamp)}
+          </span>
+
+          {msg.via === 'peer' && (
+            <span className="text-[10px] bg-yellow-600 text-yellow-50 px-1 rounded ml-2">
+              P2P
+            </span>
+          )}
+
+          {msg.via === 'server' && (
+            <span className="text-[10px] bg-slate-800 text-slate-300 px-1 rounded ml-2">
+              Srv
+            </span>
+          )}
+        </div>
+
+        {isLocation ? (
+          <p className="text-sm text-foreground flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-muted-foreground" />
+            {msg.location
+              ? `${msg.location.lat.toFixed(4)}, ${msg.location.lng.toFixed(4)}`
+              : 'Shared location'}
+          </p>
+        ) : (
+          <p className={`text-sm ${isSOS ? 'text-sos font-semibold' : 'text-foreground'}`}>
+            {msg.content}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+})}
       </div>
 
       <div className="p-4 border-t border-border bg-card">
@@ -99,12 +146,12 @@ export default function ChatPanel({ messages, onSend, username, onSendSOS, onSha
         </div>
         <div className="flex gap-2">
           <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          />
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  placeholder="Type a message..."
+  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
+  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+/>
           <Button onClick={handleSend} size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0">
             <Send className="w-4 h-4" />
           </Button>

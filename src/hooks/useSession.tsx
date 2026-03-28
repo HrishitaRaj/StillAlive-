@@ -4,7 +4,7 @@ interface SessionContextType {
   username: string;
   roomId: string;
   isJoined: boolean;
-  join: (username: string, roomId: string) => void;
+  join: (username: string, roomId?: string) => void;
   leave: () => void;
 }
 
@@ -23,9 +23,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [roomId, setRoomId] = useState('');
   const [isJoined, setIsJoined] = useState(false);
 
-  const join = (name: string, room: string) => {
+  const join = (name: string, room?: string) => {
     setUsername(name);
-    setRoomId(room);
+    if (room) setRoomId(room);
     setIsJoined(true);
   };
 

@@ -27,7 +27,18 @@ const tabs: { id: Tab; label: string; icon: typeof MessageSquare }[] = [
 
 export default function DashboardLayout({ network, geo, username, roomId, onLeave }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
-  const sosCount = network.messages.filter(m => m.type === 'sos').length;
+  // Count active unique SOS alerts (dedupe by userId or sender) for the badge
+  const sosCount = (() => {
+    const seen = new Set<string>();
+    for (const m of network.messages) {
+      if (m.type !== 'sos') continue;
+      if (m.active === false) continue;
+      const key = m.userId || m.sender || '';
+      if (!key) continue;
+      seen.add(key.toString());
+    }
+    return seen.size;
+  })();
 
   // Format zone name for display
   const formatZone = (id: string) => {
@@ -56,8 +67,17 @@ export default function DashboardLayout({ network, geo, username, roomId, onLeav
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${network.connected ? 'bg-safe' : 'bg-warning animate-pulse'}`} />
-          <span className="text-xs text-muted-foreground">{network.connected ? 'Online' : 'Searching...'}</span>
+          {navigator.onLine ? (
+            <>
+              <div className={`w-2 h-2 rounded-full ${network.connected ? 'bg-safe' : 'bg-warning animate-pulse'}`} />
+              <span className="text-xs text-muted-foreground">{network.connected ? 'Online (Server)' : 'Searching...'}</span>
+            </>
+          ) : (
+            <>
+              <div className="w-2 h-2 rounded-full bg-yellow-400" />
+              <span className="text-xs text-muted-foreground">Peer Mode (P2P)</span>
+            </>
+          )}
           <Button variant="ghost" size="sm" onClick={onLeave} className="text-muted-foreground hover:text-foreground ml-2">
             <LogOut className="w-4 h-4" />
           </Button>

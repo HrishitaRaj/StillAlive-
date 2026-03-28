@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SessionProvider } from "@/hooks/useSession";
+import RoomServerManager from '@/components/RoomServerManager';
 import LandingPage from "./pages/LandingPage";
 import JoinRoomPage from "./pages/JoinRoomPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -19,6 +20,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <SessionProvider>
+        <RoomServerManager />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
