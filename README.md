@@ -136,6 +136,7 @@ cd Still_Alive-
 npm install
 
 
+
 ▶️ Usage
 1️⃣ Start Backend Server
 node server.js
@@ -152,6 +153,8 @@ Messages are broadcast within that zone
 Socket.IO enables real-time communication
 Supabase manages authentication & backend services
 System simulates localized P2P clusters
+
+
 📸 CLI Example Output
 ═══════════════════════════════════════
   STILLALIVE CLI v2.8.1
