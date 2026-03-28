@@ -105,6 +105,14 @@ export default function useRoomServer() {
       try { window.dispatchEvent(new CustomEvent('stillalive:sos-update', { detail: data })); } catch {}
     });
 
+    socket.on('sos-assigned', (data: any) => {
+      try { window.dispatchEvent(new CustomEvent('stillalive:sos-assigned', { detail: data })); } catch {}
+    });
+
+    socket.on('sos-resolved', (data: any) => {
+      try { window.dispatchEvent(new CustomEvent('stillalive:sos-resolved', { detail: data })); } catch {}
+    });
+
     socket.on('sos-cleared', (data: any) => {
       try { window.dispatchEvent(new CustomEvent('stillalive:sos-cleared', { detail: data })); } catch {}
     });

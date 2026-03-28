@@ -276,6 +276,43 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Assign a responder to an SOS (rescuer action)
+  socket.on('assign-responder', (data = {}) => {
+    // data: { roomId, userId, responder }
+    try {
+      const { roomId, userId, responder } = data || {};
+      const room = activeRooms.find(r => r.roomId === roomId);
+      if (room) {
+        const s = room.sos.find(x => x.userId === userId || x.username === userId);
+        if (s) {
+          s.assigned = responder || socket.username || 'responder';
+          s.status = 'responding';
+          s.assignedAt = Date.now();
+        }
+        io.to(roomId).emit('sos-assigned', { roomId, userId, responder: responder || socket.username || 'responder' });
+        // system message
+        const msg = { id: `sys-${Date.now()}`, text: `Responder ${responder || socket.username || 'responder'} assigned to ${userId}`, type: 'system', username: 'system', ts: Date.now() };
+        room.messages.push(msg);
+        io.to(roomId).emit('system-message', { text: msg.text, type: 'responder-assigned', username: msg.username });
+      }
+    } catch (e) { console.warn('assign-responder failed', e); }
+  });
+
+  socket.on('resolve-sos', (data = {}) => {
+    // data: { roomId, userId, resolver }
+    try {
+      const { roomId, userId, resolver } = data || {};
+      const room = activeRooms.find(r => r.roomId === roomId);
+      if (room) {
+        room.sos = room.sos.map(s => (s.userId === userId || s.username === userId) ? { ...s, active: false, resolvedBy: resolver || socket.username || 'responder', resolvedAt: Date.now() } : s);
+        io.to(roomId).emit('sos-resolved', { roomId, userId, resolver: resolver || socket.username || 'responder' });
+        const msg = { id: `sys-${Date.now()}`, text: `SOS for ${userId} marked resolved by ${resolver || socket.username || 'responder'}`, type: 'system', username: 'system', ts: Date.now() };
+        room.messages.push(msg);
+        io.to(room.roomId).emit('system-message', { text: msg.text, type: 'sos-resolved', username: msg.username });
+      }
+    } catch (e) { console.warn('resolve-sos failed', e); }
+  });
+
   socket.on('monitor:rooms', () => {
     socket.emit('rooms',
       activeRooms.map(r => ({
@@ -383,5 +420,16 @@ app.get('/zones', (req, res) => {
     }
 
     res.json(zones);
+  } catch (e) { res.status(500).json({ ok: false, error: String(e) }); }
+});
+
+// Return full room details (users + sos) for a specific roomId
+app.get('/zone', (req, res) => {
+  try {
+    const roomId = req.query.roomId;
+    if (!roomId) return res.status(400).json({ ok: false, error: 'roomId required' });
+    const room = activeRooms.find(r => r.roomId === roomId);
+    if (!room) return res.status(404).json({ ok: false, error: 'room not found' });
+    res.json({ roomId: room.roomId, lat: room.lat, lng: room.lng, users: room.users || [], sos: room.sos || [], messages: room.messages || [] });
   } catch (e) { res.status(500).json({ ok: false, error: String(e) }); }
 });
