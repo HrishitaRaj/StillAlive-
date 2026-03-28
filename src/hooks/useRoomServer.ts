@@ -28,8 +28,15 @@ export default function useRoomServer() {
     const coords = coordsRaw ? JSON.parse(coordsRaw) : null;
 
     socket.on('connect', () => {
-      // Emit join-network with last known coords and username
-      socket.emit('join-network', { lat: coords?.lat, lng: coords?.lng, username });
+      // If we already have a target roomId (e.g., rescuer joining a specific zone), request that room explicitly
+      try {
+        if (roomId) {
+          socket.emit('join-zone', { roomId, username });
+        } else {
+          // Emit join-network with last known coords and username
+          socket.emit('join-network', { lat: coords?.lat, lng: coords?.lng, username });
+        }
+      } catch (e) { socket.emit('join-network', { lat: coords?.lat, lng: coords?.lng, username }); }
       // initialize PeerJS and share peer id with server for discovery
       try {
         const peer = peerService.init();
@@ -130,4 +137,14 @@ export default function useRoomServer() {
       socketRef.current = null;
     };
   }, [isJoined, username]);
+
+  // If roomId changes while socket is connected, request explicit join to that zone
+  useEffect(() => {
+    try {
+      const sock = socketRef.current;
+      if (sock && roomId) {
+        try { sock.emit('join-zone', { roomId, username }); } catch (e) { console.warn('emit join-zone failed', e); }
+      }
+    } catch (e) { /* ignore */ }
+  }, [roomId, username]);
 }

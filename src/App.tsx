@@ -10,6 +10,7 @@ import JoinRoomPage from "./pages/JoinRoomPage";
 import DashboardPage from "./pages/DashboardPage";
 import FutureFeaturesPage from "./pages/FutureFeaturesPage";
 import RescuerAuthPage from "./pages/RescuerAuthPage";
+import RescuerDashboard from "./pages/RescuerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/future" element={<FutureFeaturesPage />} />
             <Route path="/rescuer" element={<RescuerAuthPage />} />
+            <Route path="/rescuer/dashboard" element={<RescuerDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -41,10 +41,16 @@ export default function RescuerAuthPage() {
         toast({ title: 'Account created!', description: 'Check your email to verify, then log in.' });
         setMode('login');
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast({ title: 'Welcome back!', description: 'Redirecting to emergency network...' });
-        navigate('/join');
+        // Allow a mock rescuer account for local/testing without verification
+        if (email === 'alpha01@gmail.com' && password === 'alpha01') {
+          toast({ title: 'Mock rescuer login', description: 'Signed in as mock rescuer (alpha01).' });
+          navigate('/rescuer/dashboard');
+        } else {
+          const { error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          toast({ title: 'Welcome back!', description: 'Redirecting to emergency network...' });
+          navigate('/join');
+        }
       }
     } catch (err: any) {
       toast({ title: 'Error', description: err.message || 'Something went wrong.', variant: 'destructive' });

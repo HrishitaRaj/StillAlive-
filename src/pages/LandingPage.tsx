@@ -87,13 +87,24 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Button
-              size="lg"
-              onClick={() => navigate('/join')}
-              className="bg-sos hover:bg-sos/90 text-sos-foreground px-8 py-6 text-lg font-bold glow-sos"
-            >
-              Enter Emergency Network
-            </Button>
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                size="lg"
+                onClick={() => { sessionStorage.removeItem('stillalive_offline_mode'); navigate('/join'); }}
+                className="bg-sos hover:bg-sos/90 text-sos-foreground px-8 py-6 text-lg font-bold glow-sos"
+              >
+                Enter Emergency Network
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => { sessionStorage.setItem('stillalive_offline_mode', '1'); navigate('/join'); }}
+                className="px-6 py-6 text-lg font-bold"
+                title="Start in fully offline peer-to-peer mode"
+              >
+                Fully Offline Emergency
+              </Button>
+            </div>
           </motion.div>
 
           <motion.p

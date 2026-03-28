@@ -204,6 +204,28 @@ io.on('connection', (socket) => {
     io.to(room.roomId).emit('system-message', { text: joinMsg.text, type: 'join', username: joinMsg.username });
   });
 
+  // Allow explicit join to a specific room id (used by rescuer dashboard)
+  socket.on('join-zone', ({ roomId, username } = {}) => {
+    try {
+      const room = activeRooms.find(r => r.roomId === roomId);
+      if (!room) {
+        // If room not found, still create a placeholder room so rescuer can enter for monitoring
+        const newRoom = { roomId: roomId || `room-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, lat: 0, lng: 0, users: [], sos: [], messages: [], createdAt: Date.now() };
+        activeRooms.push(newRoom);
+      }
+      socket.join(roomId);
+      socket.username = username || socket.username || `u-${socket.id.slice(0,6)}`;
+      // add to users list if not already present
+      const r = activeRooms.find(r => r.roomId === roomId);
+      if (r) {
+        const exists = r.users.find(u => u.id === socket.id);
+        if (!exists) r.users.push({ id: socket.id, username: socket.username, joinedAt: Date.now() });
+      }
+      socket.emit('room-assigned', roomId);
+      socket.to(roomId).emit('user-joined', { username: socket.username, count: r ? r.users.length : 1 });
+    } catch (e) { console.warn('join-zone failed', e); }
+  });
+
   // Peer discovery: clients can share their PeerJS id while online
   socket.on('share-peer-id', (peerId) => {
     // relay to other members in the same rooms that a peer is available
@@ -314,4 +336,52 @@ app.get('/_blacklist', (req, res) => {
     const list = Array.from(blacklist.entries()).map(([addr, exp]) => ({ addr, expiresAt: exp }));
     res.json({ ok: true, list });
   } catch (e) { res.json({ ok: false, error: String(e) }); }
+});
+
+// Return a zones summary for rescuer dashboard
+app.get('/zones', (req, res) => {
+  try {
+    // Accept optional query params: lat, lng, radiusKm
+    const latQ = parseFloat(req.query.lat);
+    const lngQ = parseFloat(req.query.lng);
+    const radiusKm = req.query.radius ? parseFloat(req.query.radius) : 10; // default 10km radius
+
+    const mapped = activeRooms.map(r => {
+      const sosCounts = { critical: 0, medium: 0, low: 0 };
+      if (Array.isArray(r.sos)) {
+        r.sos.forEach(s => {
+          if (!s || s.active === false) return;
+          const p = (s.priority || '').toString().toLowerCase();
+          if (p === 'high' || p === 'critical') sosCounts.critical += 1;
+          else if (p === 'medium' || p === 'med') sosCounts.medium += 1;
+          else sosCounts.low += 1;
+        });
+      }
+      return {
+        roomId: r.roomId,
+        lat: r.lat,
+        lng: r.lng,
+        userCount: Array.isArray(r.users) ? r.users.length : 0,
+        lastActivity: (r.messages && r.messages.length) ? (r.messages[r.messages.length - 1].ts || r.messages[r.messages.length - 1].timestamp || 0) : (r.createdAt || 0),
+        sosCount: sosCounts,
+      };
+    });
+
+    let zones = mapped;
+    // If lat/lng filter provided, return only zones within radiusKm
+    if (!isNaN(latQ) && !isNaN(lngQ)) {
+      zones = mapped.filter(z => {
+        if (typeof z.lat !== 'number' || typeof z.lng !== 'number') return false;
+        const d = getDistance(latQ, lngQ, z.lat, z.lng);
+        return d <= radiusKm;
+      });
+    }
+
+    // If no zones found nearby, fall back to returning all active zones (no mocking by default)
+    if (!zones || zones.length === 0) {
+      zones = mapped;
+    }
+
+    res.json(zones);
+  } catch (e) { res.status(500).json({ ok: false, error: String(e) }); }
 });
