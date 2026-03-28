@@ -1,20 +1,76 @@
 # 🚀 Still Alive – Decentralized CLI Communication System
+
+> A next-gen CLI + Web-based real-time communication platform simulating **P2P networking**, **zone-based routing**, and **decentralized connectivity** using WebSockets, TCP, and mDNS-inspired discovery.
+
+---
+
 ## 📌 Overview
 
-**Still Alive** is a next-generation CLI-based real-time communication system that simulates **decentralized, peer-to-peer (P2P) networking** across dynamic location zones. Inspired by modern distributed systems, it blends **TCP-based messaging**, **WebSockets**, and concepts from **mDNS (Multicast DNS)** and **WebRTC-style peer discovery** to create a lightweight yet powerful communication layer.
+**Still Alive** is a next-generation real-time communication system that combines a **CLI-based chat platform** with a **modern web dashboard (Escuar UI)**. It simulates **decentralized, peer-to-peer (P2P) networking** across dynamic location zones.
 
-Designed for developers and network enthusiasts, Still Alive enables seamless, low-latency messaging while mimicking how real-world decentralized networks discover, connect, and communicate—without relying on heavy centralized infrastructure.
+Inspired by real-world distributed systems, it integrates:
 
-Perfect for exploring:
+- 🔗 Peer-to-Peer (P2P) Networking  
+- 🌐 TCP/IP Communication  
+- 📡 mDNS-inspired Local Discovery  
+- 🛰️ WebRTC-style Signaling  
+- ⚡ WebSocket-based real-time messaging  
 
-- 🌐 **Real-time networking over TCP & WebSockets**  
-- 📡 **Zone-aware communication with mDNS-inspired discovery**  
-- 🔗 **Peer-to-peer (P2P) connectivity models**  
-- 💬 **CLI-driven distributed chat systems**  
-- ⚡ **Low-latency, event-driven message exchange**  
-- 🛰️ **Concepts inspired by WebRTC signaling & mesh networks**
+This makes it ideal for experimenting with **low-latency communication**, **distributed architectures**, and **network simulation systems**.
 
-- ## 🏗️ Tech Stack
+---
+
+## ✨ Features
+
+### 💻 CLI System
+- 💬 Real-time terminal-based chat  
+- 🌐 Zone-based communication  
+- ⚡ Lightweight and fast  
+
+### 🌐 Web App (Escuar Dashboard)
+- 📊 Live network monitoring  
+- 👥 Rescuer authentication system  
+- 🧭 Join/Create rooms  
+- 📡 Real-time updates  
+- 🚨 Rescue coordination interface  
+
+### 🔥 Core Capabilities
+- ⚡ Low-latency messaging (Socket.IO)  
+- 🔗 P2P-inspired architecture  
+- 📡 Dynamic zone routing  
+- 🛰️ WebRTC-inspired signaling  
+- 🌍 Future-ready automatic network detection  
+
+---
+
+## 🏗️ Tech Stack
+
+### ⚙️ Backend
+- **Node.js**  
+- **Express.js**  
+- **Socket.IO**  
+
+### 🌐 Frontend
+- **React (Vite + TypeScript)**  
+- **Tailwind CSS**  
+
+### 🔌 Networking
+- **WebSockets**  
+- **TCP/IP Model**  
+- **P2P Architecture (conceptual)**  
+- **WebRTC (planned)**  
+- **mDNS-inspired discovery**  
+
+### 🗄️ Backend-as-a-Service
+- **Supabase (Auth + Database)**  
+
+### 🛠️ Tools
+- **Git & GitHub**  
+- **NPM**  
+
+
+
+- ## 🏗️ Technologies : 
 
 ### ⚙️ Core Technologies
 - **Node.js** – Backend runtime for handling asynchronous, event-driven communication  
@@ -40,61 +96,29 @@ Perfect for exploring:
 - **NPM** – Dependency management  
 
 
-# 🚀 Still Alive – Decentralized CLI Communication System
-
-> A next-gen CLI-based real-time communication platform simulating **P2P networking**, **zone-based routing**, and **decentralized connectivity** using WebSockets, TCP, and mDNS-inspired discovery.
-
----
-
----
-
-## ✨ Features
-
-- 💬 Real-time CLI-based chat system  
-- 🌐 Zone-based communication model  
-- ⚡ Low-latency messaging using WebSockets  
-- 🔗 P2P-inspired architecture  
-- 📡 Dynamic user grouping (zone logic)  
-- 🧠 Event-driven communication system  
-- 🛰️ Simulated decentralized networking  
-
----
-
-## 🏗️ Tech Stack
-
-### ⚙️ Core
-- Node.js  
-- Express.js  
-
-### 🔌 Real-Time
-- Socket.IO  
-- WebSockets  
-
-### 💻 CLI
-- Node.js CLI (custom scripts)  
-- JavaScript (ES6+)  
-
-### 🌐 Networking Concepts
-- TCP/IP Model  
-- P2P Architecture (simulated)  
-- mDNS-inspired discovery  
-- WebRTC-inspired signaling  
-- Zone-based routing  
-
-### 🛠️ Tools
-- Git & GitHub  
-- NPM  
-
 ---
 
 ## 📂 Project Structure
 Still_Alive/
 │── backend/ # Server-side logic (Socket.IO, routing)
-│── cli/ # CLI client scripts
-│── utils/ # Zone logic & helper utilities
-│── dashboard/ # Escuar monitoring dashboard (upcoming)
-│── package.json # Dependencies and scripts
+│── cli/ # CLI client
+│── utils/ # Helper functions (zone logic)
+│
+│── src/
+│ ├── pages/
+│ │ ├── LandingPage.tsx
+│ │ ├── DashboardPage.tsx
+│ │ ├── RescuerDashboard.tsx
+│ │ ├── RescuerAuthPage.tsx
+│ │ ├── JoinRoomPage.tsx
+│ │ ├── FutureFeaturesPage.tsx
+│ │ ├── Index.tsx
+│ │ └── NotFound.tsx
+│
+│── dashboard/ # Escuar dashboard
+│── package.json
 │── README.md
+
 
 
 ---
@@ -111,53 +135,43 @@ cd Still_Alive-
 # Install dependencies
 npm install
 
+
 ▶️ Usage
-1️⃣ Start the Server
+1️⃣ Start Backend Server
 node server.js
 2️⃣ Run CLI Client
 ZONE=<zone-id> node cli-chat.js <username>
 ✅ Example
 ZONE=zone-641-4007 node cli-chat.js bobby
+3️⃣ Run Frontend (Dashboard)
+npm run dev
 🧠 How It Works
-Users join the network through a CLI client
-Each user is assigned to a zone (manually or auto-detected in future)
-Messages are broadcast within the same zone
-Socket.IO ensures real-time communication
-System simulates localized peer clusters (P2P-style)
-📸 Example Output
+Users connect via CLI or Web UI
+Each user is assigned a zone / room
+Messages are broadcast within that zone
+Socket.IO enables real-time communication
+Supabase manages authentication & backend services
+System simulates localized P2P clusters
+📸 CLI Example Output
 ═══════════════════════════════════════
   STILLALIVE CLI v2.8.1
 ═══════════════════════════════════════
 👤 Username: bobby
 🔧 Mode: server
 🌐 Connected to zone: zone-641-4007
-🚧 Future Improvements
-🌍 Automatic Network Detection (mDNS / local network awareness)
-📊 Escuar Dashboard – Real-time network visualization & monitoring
-📱 Web-based UI for chat and control
-🔐 Authentication & secure communication layer
-🤖 AI-based smart routing & congestion handling
-🌐 True P2P communication using WebRTC
-📡 Cross-zone communication bridging
-📊 Escuar Dashboard (Upcoming)
+📊 Escuar Dashboard
 
-The Escuar Dashboard will provide:
+The Escaper Dashboard provides:
 
 📡 Live network visualization
-👥 Active users per zone
-🌐 Zone interaction mapping
-⚡ Real-time message tracking
-📊 Network analytics & performance metrics
-🤝 Contributing
-
-Contributions are welcome!
-
-# Fork the repo
-# Create a new branch
-git checkout -b feature-name
-
-# Commit changes
-git commit -m "Added new feature"
-
-# Push changes
-git push origin feature-name
+👥 Active users tracking
+🌐 Zone/room management
+📊 Real-time analytics
+🚨 Rescue coordination system
+🚧 Future Improvements
+🌍 Automatic network detection (mDNS-based)
+🔗 True P2P via WebRTC
+📱 Mobile-friendly UI
+🔐 End-to-end encryption
+🤖 AI-based routing
+🌐 Cross-zone communication
