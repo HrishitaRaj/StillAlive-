@@ -98,7 +98,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => { sessionStorage.setItem('stillalive_offline_mode', '1'); navigate('/join'); }}
+                onClick={() => window.open('https://still-alive-fawn.vercel.app/', '_blank')}
                 className="px-6 py-6 text-lg font-bold"
                 title="Start in fully offline peer-to-peer mode"
               >

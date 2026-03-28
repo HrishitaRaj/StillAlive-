@@ -6,33 +6,33 @@
 
 @layer base {
   :root {
-    --background: 220 20% 7%;
-    --foreground: 210 20% 92%;
+    --background: 120 30% 8%;
+    --foreground: 0 0% 100%;
 
-    --card: 220 18% 10%;
-    --card-foreground: 210 20% 92%;
+    --card: 120 25% 12%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 210 20% 92%;
+    --popover: 120 25% 12%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 100% 52%;
+    --primary: 86 54% 21%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 16% 16%;
-    --secondary-foreground: 210 20% 85%;
+    --secondary: 120 20% 16%;
+    --secondary-foreground: 86 54% 21%;
 
-    --muted: 220 14% 14%;
-    --muted-foreground: 215 12% 55%;
+    --muted: 120 15% 18%;
+    --muted-foreground: 120 20% 70%;
 
-    --accent: 220 16% 18%;
-    --accent-foreground: 210 20% 92%;
+    --accent: 120 25% 20%;
+    --accent-foreground: 86 54% 21%;
 
     --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 18%;
-    --input: 220 14% 18%;
-    --ring: 210 100% 52%;
+    --border: 120 20% 20%;
+    --input: 120 20% 20%;
+    --ring: 86 54% 21%;
 
     --radius: 0.75rem;
 
@@ -40,7 +40,7 @@
     --sos-foreground: 0 0% 100%;
     --sos-glow: 0 85% 55%;
 
-    --safe: 145 65% 42%;
+    --safe: 86 54% 21%;
     --safe-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
@@ -49,21 +49,21 @@
     --critical: 0 85% 55%;
     --critical-foreground: 0 0% 100%;
 
-    --online: 145 65% 42%;
-    --tactical: 210 100% 52%;
+    --online: 86 54% 21%;
+    --tactical: 86 54% 21%;
     --tactical-foreground: 0 0% 100%;
 
     --font-display: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --sidebar-background: 220 18% 10%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 210 100% 52%;
+    --sidebar-background: 120 25% 12%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 86 54% 21%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 16% 16%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 220 14% 18%;
-    --sidebar-ring: 210 100% 52%;
+    --sidebar-accent: 120 25% 20%;
+    --sidebar-accent-foreground: 86 54% 21%;
+    --sidebar-border: 120 20% 20%;
+    --sidebar-ring: 86 54% 21%;
   }
 }
 
@@ -85,7 +85,7 @@
 @layer utilities {
   .text-gradient-hero {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(210 100% 60%), hsl(210 100% 45%), hsl(190 90% 50%));
+    background-image: linear-gradient(135deg, hsl(86 54% 31%), hsl(86 54% 25%), hsl(86 54% 21%));
   }
 
   .glow-sos {
