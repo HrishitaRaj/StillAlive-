@@ -98,30 +98,6 @@ This makes it ideal for experimenting with **low-latency communication**, **dist
 
 ---
 
-## 📂 Project Structure
-Still_Alive/
-│── backend/ # Server-side logic (Socket.IO, routing)
-│── cli/ # CLI client
-│── utils/ # Helper functions (zone logic)
-│
-│── src/
-│ ├── pages/
-│ │ ├── LandingPage.tsx
-│ │ ├── DashboardPage.tsx
-│ │ ├── RescuerDashboard.tsx
-│ │ ├── RescuerAuthPage.tsx
-│ │ ├── JoinRoomPage.tsx
-│ │ ├── FutureFeaturesPage.tsx
-│ │ ├── Index.tsx
-│ │ └── NotFound.tsx
-│
-│── dashboard/ # Escuar dashboard
-│── package.json
-│── README.md
-
-
-
----
 
 ## ⚙️ Installation
 
